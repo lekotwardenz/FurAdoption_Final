@@ -27,7 +27,7 @@
                 <i class="fa-regular fa-bell"></i>
             </div>
             <div class="profile-container">
-                <img src="https://via.placeholder.com/40" alt="User Profile" class="profile-img">
+                <img src="{{ request.user.profile.avatar_url }}" alt="Profile" class="profile-img">
             </div>
         </div>
     </nav>
@@ -38,7 +38,7 @@
         <!-- Post Bar -->
         <div class="post-bar-container">
             <div class="post-profile-container">
-                <img src="https://via.placeholder.com/40" alt="User Profile" class="profile-img">
+                <img src="{{ request.user.profile.avatar_url }}" alt="Profile" class="profile-img">
             </div>
             
             <div class="post-input-wrapper">
@@ -59,7 +59,10 @@
                 <!-- Post Header Row -->
                 <div class="post-header">
                     <div class="post-author-info">
-                        <img src="https://via.placeholder.com/40" alt="Profile" class="profile-img">
+                        <!-- Make sure this wrapper div has the class name! -->
+                        <div class="profile-container">
+                            <img src="{{ post.user.profile.avatar_url }}" alt="Profile" class="profile-img">
+                        </div>
                         <div class="author-details">
                             <span class="author-name">{{ post.user.username }}</span>
                             <span class="post-date">{{ post.created_at|date:"F j, Y" }}</span>
@@ -111,7 +114,7 @@
                         <!-- Loop through the custom related_name 'comments' -->
                         {% for comment in post.comments.all %}
                         <div class="comment-item">
-                            <img src="https://via.placeholder.com/30" alt="Profile" class="comment-profile-img">
+                            <img src="{{ comment.user.profile.avatar_url }}" alt="Profile" class="comment-profile-img">
                             <div class="comment-content">
                                 <div class="comment-header">
                                     <span class="comment-author">{{ comment.user.username }}</span>
@@ -158,14 +161,15 @@
             
             <div class="modal-user-info">
                 <div class="profile-container">
-                    <img src="https://via.placeholder.com/40" alt="User Profile" class="profile-img">
+                    <img src="{{ request.user.profile.avatar_url }}" alt="User Profile" class="profile-img">
                 </div>
                 <div class="user-details">
                     <!-- Dynamically displays the logged-in user's username -->
                     <span class="user-name">{{ request.user.username }}</span>
                     <select id="postClassification" class="post-classification-dropdown">
-                        <option value="open">Open for Adoption</option>
-                        <option value="willing">Willing to adopt</option>
+                        <!-- Change the values to match the models.py exactly -->
+                        <option value="Rescue">Open for Adoption</option>
+                        <option value="Looking to Adopt">Willing to adopt</option>
                     </select>
                 </div>
             </div>

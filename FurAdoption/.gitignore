@@ -1,0 +1,14 @@
+# Python / Django
+__pycache__/
+*.py[cod]
+*$py.class
+db.sqlite3
+media/
+
+# Environment variables & Secrets
+.env
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store

@@ -109,6 +109,7 @@ body {
     overflow: hidden;
     cursor: pointer;
     border: 2px solid #e5e7eb;
+    flex-shrink: 0; /* Prevents flexbox from squishing it */
 }
 
 .profile-img {

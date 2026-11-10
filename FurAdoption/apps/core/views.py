@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 import json
 from django.http import JsonResponse
-from apps.authentication.models import Post, PostPhoto, PostLike, PostComment # Update imports
+from apps.authentication.models import Post, PostPhoto, PostLike, PostComment
 
 def toggle_like(request, post_id):
     if request.method == 'POST':
@@ -24,7 +24,7 @@ def toggle_like(request, post_id):
         return JsonResponse({
             'success': True, 
             'liked': liked, 
-            'like_count': post.likes.count()  # <-- Updated to match related_name='likes'
+            'like_count': post.likes.count()
         })
         
 def add_comment(request, post_id):
@@ -40,59 +40,47 @@ def add_comment(request, post_id):
             
         post = Post.objects.get(id=post_id)
         
-        # <-- Updated to match your model's 'content' field
         comment = PostComment.objects.create(user=request.user, post=post, content=text)
         
         return JsonResponse({
             'success': True,
             'username': comment.user.username,
             'date': comment.created_at.strftime("%B %d, %Y"),
-            'text': comment.content,  # <-- Updated field name
-            'comment_count': post.comments.count()  # <-- Updated to match related_name='comments'
+            'text': comment.content,
+            'comment_count': post.comments.count(),
+            'avatar_url': request.user.profile.avatar_url  # Sends the dynamic profile avatar back to JS
         })
 
 def home_view(request):
-    # Fetch posts and prefetch photos/likes for speed
-    posts = Post.objects.all().order_by('-created_at').prefetch_related('photos', 'likes')
+    # Optimized with select_related('user__profile') to prevent N+1 query lag when loading avatars
+    posts = Post.objects.select_related('user__profile').prefetch_related('photos', 'likes').order_by('-created_at')
     
-    # Create a simple list of post IDs the current user has liked
     liked_post_ids = []
     if request.user.is_authenticated:
-        # This creates a flat list like: [1, 4, 7]
         liked_post_ids = PostLike.objects.filter(user=request.user).values_list('post_id', flat=True)
             
     return render(request, 'core/home.html', {
         'posts': posts,
-        'liked_post_ids': liked_post_ids  # Pass the list to the template
+        'liked_post_ids': liked_post_ids
     })
 
 def create_post(request):
     if request.method == 'POST':
-        # 1. Security check: Ensure the user is actually logged in
         if not request.user.is_authenticated:
             return JsonResponse({'success': False, 'message': 'You must be logged in to post.'})
 
-        # 2. Extract the data sent from your home.js fetch request
-        frontend_classification = request.POST.get('classification')
+        post_classification = request.POST.get('classification')
         content = request.POST.get('content')
-        images = request.FILES.getlist('images') # Grabs the entire array of up to 10 images
-        
-        # 3. Map frontend dropdown values to your strict ERD choices
-        db_mapping = {
-            'open': 'Rescue',
-            'willing': 'Looking to Adopt'
-        }
-        actual_post_type = db_mapping.get(frontend_classification, 'Rescue')
+        images = request.FILES.getlist('images')
         
         try:
-            # 4. Create the main Post record (This automatically assigns ownership to the current user)
+            # Creates the main post record using direct classification values ('Rescue' or 'Looking to Adopt')
             new_post = Post.objects.create(
                 user=request.user,
-                post_type=actual_post_type,
+                post_type=post_classification,
                 caption=content
             )
             
-            # 5. Loop through the array and save every image to the PostPhoto table
             for image in images:
                 PostPhoto.objects.create(
                     post=new_post,

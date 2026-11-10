@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const commentList = document.getElementById(`comment-list-${postId}`);
                     const newCommentHtml = `
                         <div class="comment-item">
-                            <img src="https://via.placeholder.com/30" alt="Profile" class="comment-profile-img">
+                            <img src="${data.avatar_url}" alt="Profile" class="comment-profile-img">
                             <div class="comment-content">
                                 <div class="comment-header">
                                     <span class="comment-author">${data.username}</span>
