@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from .forms import CustomRegisterForm
+from apps.authentication.forms import ProfileEditForm
 
 def register(request):
     if request.method == 'POST':

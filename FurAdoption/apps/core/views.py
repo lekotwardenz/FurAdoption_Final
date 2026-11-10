@@ -1,11 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 import json
 from django.http import JsonResponse
-from apps.authentication.models import Post, PostPhoto, PostLike, PostComment
-
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.models import User
+from apps.authentication.models import Post, PostPhoto, PostLike, PostComment, Profile
+from apps.authentication.forms import ProfileEditForm
 
 def toggle_like(request, post_id):
     if request.method == 'POST':
@@ -51,11 +50,10 @@ def add_comment(request, post_id):
             'date': comment.created_at.strftime("%B %d, %Y"),
             'text': comment.content,
             'comment_count': post.comments.count(),
-            'avatar_url': request.user.profile.avatar_url  # Sends the dynamic profile avatar back to JS
+            'avatar_url': request.user.profile.avatar_url  
         })
 
 def home_view(request):
-    # Optimized with select_related('user__profile') to prevent N+1 query lag when loading avatars
     posts = Post.objects.select_related('user__profile').prefetch_related('photos', 'likes').order_by('-created_at')
     
     liked_post_ids = []
@@ -77,7 +75,6 @@ def create_post(request):
         images = request.FILES.getlist('images')
         
         try:
-            # Creates the main post record using direct classification values ('Rescue' or 'Looking to Adopt')
             new_post = Post.objects.create(
                 user=request.user,
                 post_type=post_classification,
@@ -98,13 +95,29 @@ def create_post(request):
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
 def profile_view(request, username):
-    # Fetch the user whose profile is being viewed
     profile_user = get_object_or_404(User, username=username)
-    
-    # Count their posts
     posts_count = profile_user.posts.count()
+    is_own_profile = request.user.is_authenticated and request.user == profile_user
     
     return render(request, 'core/profile.html', {
         'profile_user': profile_user,
         'posts_count': posts_count,
+        'is_own_profile': is_own_profile,
+    })
+
+@login_required
+def edit_profile_view(request):
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = ProfileEditForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile', username=request.user.username)
+    else:
+        form = ProfileEditForm(instance=profile)
+
+    return render(request, 'core/edit_profile.html', {
+        'form': form,
+        'profile': profile
     })

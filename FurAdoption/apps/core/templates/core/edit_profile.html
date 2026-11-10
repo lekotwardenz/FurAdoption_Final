@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - FurAdoption</title>
+    <link rel="stylesheet" href="{% static 'core/home.css' %}">
+    <link rel="stylesheet" href="{% static 'core/profile.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="logo-container">
+                <a href="{% url 'home' %}"><img src="{% static 'images/logo.png' %}" alt="Logo" class="logo-img"></a>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <a href="{% url 'profile' request.user.username %}" class="home-link-btn"><i class="fa-solid fa-arrow-left"></i> Back to Profile</a>
+        </div>
+    </nav>
+
+    <main class="profile-main">
+        <div class="profile-header-card" style="padding: 30px;">
+            <h2>Edit Profile</h2>
+            
+            <form method="POST" enctype="multipart/form-data" class="edit-profile-form">
+                {% csrf_token %}
+                
+                <div class="form-group" style="margin: 20px 0;">
+                    <label>Current Avatar Preview:</label>
+                    <div class="profile-avatar-large-container" style="margin-top: 10px;">
+                        <img src="{{ profile.avatar_url }}" alt="Avatar" class="profile-avatar-large">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="{{ form.profile_picture.id_for_label }}">Change Profile Picture:</label>
+                    {{ form.profile_picture }}
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="{{ form.full_name.id_for_label }}">Full Name:</label>
+                    {{ form.full_name }}
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="{{ form.bio.id_for_label }}">Bio:</label>
+                    {{ form.bio }}
+                </div>
+
+                <button type="submit" class="modal-post-btn" style="padding: 10px 20px; cursor: pointer; background-color: #ff6b6b; color: white; border: none; border-radius: 6px; font-weight: 600;">Save Changes</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
