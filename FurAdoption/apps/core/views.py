@@ -4,6 +4,9 @@ import json
 from django.http import JsonResponse
 from apps.authentication.models import Post, PostPhoto, PostLike, PostComment
 
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.models import User
+
 def toggle_like(request, post_id):
     if request.method == 'POST':
         if not request.user.is_authenticated:
@@ -93,3 +96,15 @@ def create_post(request):
             return JsonResponse({'success': False, 'message': str(e)})
             
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+def profile_view(request, username):
+    # Fetch the user whose profile is being viewed
+    profile_user = get_object_or_404(User, username=username)
+    
+    # Count their posts
+    posts_count = profile_user.posts.count()
+    
+    return render(request, 'core/profile.html', {
+        'profile_user': profile_user,
+        'posts_count': posts_count,
+    })

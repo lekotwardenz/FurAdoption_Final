@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ profile_user.username }} - Profile | FurAdoption</title>
+    <link rel="stylesheet" href="{% static 'core/home.css' %}">
+    <link rel="stylesheet" href="{% static 'core/profile.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar (Same as home) -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="logo-container">
+                <a href="{% url 'home' %}">
+                    <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo-img">
+                </a>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <a href="{% url 'home' %}" class="home-link-btn"><i class="fa-solid fa-house"></i> Home</a>
+        </div>
+    </nav>
+
+    <!-- Main Profile Container -->
+    <main class="profile-main">
+        <!-- Profile Header Card -->
+        <div class="profile-header-card">
+            <div class="profile-banner"></div>
+            <div class="profile-info-section">
+                <div class="profile-avatar-large-container">
+                    <img src="https://ui-avatars.com/api/?name={{ profile_user.username }}&background=random&color=fff&size=150" alt="Profile" class="profile-avatar-large">
+                </div>
+                <div class="profile-text-details">
+                    <h1 class="profile-username">@{{ profile_user.username }}</h1>
+                    <p class="profile-fullname">{{ profile_user.profile.full_name|default:profile_user.username }}</p>
+                    <p class="profile-bio">{{ profile_user.profile.bio|default:"No bio added yet. Animal lover & rescuer." }}</p>
+                    <div class="profile-stats">
+                        <span><strong>{{ posts_count|default:0 }}</strong> Posts</span>
+                        <span><strong>0</strong> Shelters</span>
+                        <span>Joined {{ profile_user.date_joined|date:"F Y" }}</span>
+                    </div>
+                </div>
+                <div class="profile-action-btns">
+                    <button class="edit-profile-btn"><i class="fa-solid fa-pen"></i> Edit Profile</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Tabs (Posts / Saved / etc.) -->
+        <div class="profile-tabs">
+            <button class="tab-btn active" data-tab="user-posts">Posts</button>
+            <button class="tab-btn" data-tab="user-shelters">Shelters / Animals</button>
+        </div>
+
+        <!-- Tab Content Area -->
+        <div class="profile-content-area">
+            <div class="tab-pane active" id="user-posts">
+                <p class="empty-state-text">User posts will appear here.</p>
+            </div>
+            <div class="tab-pane" id="user-shelters" style="display: none;">
+                <p class="empty-state-text">User shelters/animals will appear here.</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="{% static 'core/profile.js' %}"></script>
+</body>
+</html>
