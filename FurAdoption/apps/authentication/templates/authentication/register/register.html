@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - FurAdoption</title>
+    <link rel="stylesheet" href="{% static 'authentication//register/register.css' %}">
+    <!-- Font Awesome for the input icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="top-header">
+        <div class="logo-container">
+            <!-- Logo Image -->
+            <img src="{% static 'authentication/images/logo-white.png' %}" alt="FurAdoption Logo" class="logo-img">
+            <h1>FurAdoption</h1>
+        </div>
+    </header>
+
+    <main class="form-container">
+        <div class="form-card">
+            <h2 class="form-title">Create an Account</h2>
+            <p class="form-subtitle">Join FurAdoption now and be part of a community dedicated to giving every shelter pet a second chance. Your new best friend is waiting.</p>
+            
+            {% if messages %}
+                <div class="error-messages" style="margin-bottom: 15px;">
+                    {% for message in messages %}
+                        <p style="color: #ff4d4d; font-size: 13px; margin-bottom: 5px;">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="input-group">
+                    <i class="fa-regular fa-envelope icon"></i>
+                    <input type="email" name="email" placeholder="Email*" required>
+                </div>
+
+                <div class="name-row">
+                    <div class="input-group half-width">
+                        <input type="text" name="first_name" placeholder="First name*" required>
+                    </div>
+                    <div class="input-group half-width">
+                        <input type="text" name="last_name" placeholder="Last name*" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-regular fa-user icon"></i>
+                    <input type="text" name="username" placeholder="Username*" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-solid fa-lock icon"></i>
+                    <!-- Primary password field -->
+                    <input type="password" name="password1" placeholder="Password*" required>
+                    <i class="fa-regular fa-eye-slash toggle-password"></i>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-solid fa-lock icon"></i>
+                    <!-- Confirmation password field -->
+                    <input type="password" name="password2" placeholder="Confirm Password*" required>
+                    <i class="fa-regular fa-eye-slash toggle-password"></i>
+                </div>
+
+                <button type="submit" class="submit-btn">Create Account</button>
+            </form>
+            
+            <p class="footer-link">Already have account? <a href="{% url 'login' %}">Sign in here</a></p>
+        </div>
+    </main>
+
+    <footer class="page-footer">
+        <p>Copyright &copy; 2026 FurAdoption. All rights reserved.</p>
+    </footer>
+
+    <!-- External JavaScript for Toggle Password Visibility -->
+    <script src="{% static 'authentication/register/register.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - FurAdoption</title>
+    <link rel="stylesheet" href="{% static 'core/home.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Fixed Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="logo-container">
+                <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo-img">
+            </div>
+            
+            <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Looking for something?">
+            </div>
+        </div>
+
+        <div class="navbar-right">
+            <div class="nav-icon">
+                <i class="fa-regular fa-bell"></i>
+            </div>
+            <div class="profile-container">
+                <img src="https://via.placeholder.com/40" alt="User Profile" class="profile-img">
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area (Scrollable) -->
+    <main class="main-content">
+        
+        <!-- Post Bar -->
+        <div class="post-bar-container">
+            <div class="post-profile-container">
+                <img src="https://via.placeholder.com/40" alt="User Profile" class="profile-img">
+            </div>
+            
+            <div class="post-input-wrapper">
+                <input type="text" placeholder="Have a newly rescued animal or looking to adopt a pet?">
+            </div>
+            
+            <button class="post-submit-btn">
+                <i class="fa-regular fa-paper-plane"></i>
+            </button>
+        </div>
+
+        <!-- The Dynamic Scrollable Feed -->
+        <div class="feed-container">
+            
+            {% for post in posts %}
+            <div class="post-card">
+                
+                <!-- Post Header Row -->
+                <div class="post-header">
+                    <div class="post-author-info">
+                        <img src="https://via.placeholder.com/40" alt="Profile" class="profile-img">
+                        <div class="author-details">
+                            <span class="author-name">{{ post.user.username }}</span>
+                            <span class="post-date">{{ post.created_at|date:"F j, Y" }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Dynamic Badge Color based on Post Type -->
+                    <div class="post-badge {% if post.post_type == 'Rescue' %}badge-rescue{% else %}badge-adopt{% endif %}">
+                        <i class="fa-solid fa-paw"></i> 
+                        {% if post.post_type == 'Rescue' %}Open for Adoption{% else %}Willing to adopt{% endif %}
+                    </div>
+                </div>
+
+                <!-- Post Text -->
+                <div class="post-content">
+                    <p>{{ post.caption }}</p>
+                </div>
+
+                <!-- Post Image (Displays the first uploaded image) -->
+                {% if post.photos.all %}
+                <div class="post-media">
+                    <img src="{{ post.photos.first.image_url.url }}" alt="Post Photo">
+                </div>
+                {% endif %}
+
+                <!-- Post Interactions -->
+                <div class="post-actions" data-post-id="{{ post.id }}">
+                    <!-- LIKE BUTTON -->
+                    <span class="action-item like-btn">
+                        <i class="fa-heart {% if post.id in liked_post_ids %}fa-solid liked-heart{% else %}fa-regular{% endif %}" style="color: #ff4d4d;"></i> 
+                        <span class="like-count">{{ post.likes.count }}</span>
+                    </span>
+                    
+                    <!-- COMMENT ICON -->
+                    <span class="action-item">
+                        <i class="fa-solid fa-comment" style="color: #888;"></i> 
+                        <span class="comment-count">{{ post.comments.count }}</span>
+                    </span>
+                </div>
+
+                <!-- Toggle Comments Button -->
+                <div class="toggle-comments-wrapper">
+                    <span class="toggle-comments-btn" data-post-id="{{ post.id }}">Open comments</span>
+                </div>
+
+                <!-- Comments Section (Hidden by Default) -->
+                <div class="comments-section" id="comments-section-{{ post.id }}">
+                    <div class="comment-list" id="comment-list-{{ post.id }}">
+                        <!-- Loop through the custom related_name 'comments' -->
+                        {% for comment in post.comments.all %}
+                        <div class="comment-item">
+                            <img src="https://via.placeholder.com/30" alt="Profile" class="comment-profile-img">
+                            <div class="comment-content">
+                                <div class="comment-header">
+                                    <span class="comment-author">{{ comment.user.username }}</span>
+                                    <span class="comment-date">{{ comment.created_at|date:"F j, Y" }}</span>
+                                </div>
+                                <!-- Match the 'content' field in PostComment -->
+                                <p class="comment-text">{{ comment.content }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Add Comment Input -->
+                    <div class="comment-input-wrapper">
+                        <input type="text" class="comment-input" id="comment-input-{{ post.id }}" placeholder="Write a comment...">
+                        <button class="submit-comment-btn" data-post-id="{{ post.id }}">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+                
+            </div>
+            {% empty %}
+            <!-- Displays if the database is completely empty -->
+            <div class="empty-feed">
+                <p style="text-align: center; color: #888; margin-top: 40px;">No posts yet. Be the first to post!</p>
+            </div>
+            {% endfor %}
+            
+        </div>
+
+    </main>
+
+    {% csrf_token %}
+
+    <!-- Create Post Modal Overlay -->
+    <div id="createPostModal" class="modal-overlay">
+        <div class="modal-box">
+            
+            <div class="modal-header">
+                <h2>Create a post</h2>
+                <button class="close-modal-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="modal-user-info">
+                <div class="profile-container">
+                    <img src="https://via.placeholder.com/40" alt="User Profile" class="profile-img">
+                </div>
+                <div class="user-details">
+                    <!-- Dynamically displays the logged-in user's username -->
+                    <span class="user-name">{{ request.user.username }}</span>
+                    <select id="postClassification" class="post-classification-dropdown">
+                        <option value="open">Open for Adoption</option>
+                        <option value="willing">Willing to adopt</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="modal-body">
+                <textarea id="postTextarea" placeholder="Just rescued an animal? Post about it!"></textarea>
+                
+                <!-- Dynamic Image Grid Container -->
+                <div id="imagePreviewContainer" class="image-preview-container"></div>
+            </div>
+            
+            <div class="modal-footer" style="position: relative;">
+                <div class="modal-icons">
+                    <!-- Hidden file input for up to 10 images -->
+                    <input type="file" id="imageUploadInput" accept="image/*" multiple style="display: none;">
+                    
+                    <i id="triggerImageUpload" class="fa-solid fa-image" style="color: #ff6b6b; cursor: pointer;"></i>
+                    <i id="triggerEmojiPicker" class="fa-regular fa-face-smile" style="color: #888; cursor: pointer;"></i>
+                </div>
+                
+                <div id="emojiPickerMenu" class="emoji-picker-menu">
+                    <span class="emoji-item">😀</span><span class="emoji-item">😂</span>
+                    <span class="emoji-item">🥺</span><span class="emoji-item">😍</span>
+                    <span class="emoji-item">🙏</span><span class="emoji-item">🐶</span>
+                    <span class="emoji-item">🐱</span><span class="emoji-item">🐾</span>
+                    <span class="emoji-item">❤️</span><span class="emoji-item">✨</span>
+                </div>
+
+                <button class="modal-post-btn">Post</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Link the JavaScript file here -->
+    <script src="{% static 'core/home.js' %}"></script>
+</body>
+</html>

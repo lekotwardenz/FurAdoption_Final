@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FurAdoption</title>
+    <link rel="stylesheet" href="{% static 'authentication/login/login.css' %}">
+    <!-- Font Awesome for input icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="top-header">
+        <div class="logo-container">
+            <img src="{% static 'authentication/images/logo-white.png' %}" alt="FurAdoption Logo" class="logo-img">
+            <h1>FurAdoption</h1>
+        </div>
+    </header>
+
+    <main class="form-container">
+        <div class="form-card">
+            <h2 class="form-title">Login to your account</h2>
+            <p class="form-subtitle">Join FurAdoption now and be part of a community dedicated to giving every shelter pet a second chance. Your new best friend is waiting.</p>
+            
+            {% if messages %}
+                <div class="error-messages" style="margin-bottom: 15px;">
+                    {% for message in messages %}
+                        <p style="color: #ff4d4d; font-size: 13px; margin-bottom: 5px;">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="POST">
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="input-group">
+                    <i class="fa-regular fa-envelope icon"></i>
+                    <!-- Changed placeholder back to Email -->
+                    <input type="text" name="username" placeholder="Email" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-solid fa-lock icon"></i>
+                    <input type="password" name="password" placeholder="Password" required>
+                    <i class="fa-regular fa-eye-slash toggle-password"></i>
+                </div>
+
+                <button type="submit" class="submit-btn">Sign in</button>
+            </form>
+            
+            <p class="footer-link">Don't have an account yet? <a href="{% url 'register' %}">Sign up here</a></p>
+        </div>
+    </main>
+
+    <footer class="page-footer">
+        <p>Copyright &copy; 2026 FurAdoption. All rights reserved.</p>
+    </footer>
+
+    <!-- Reuses the same JavaScript toggle script -->
+    <script src="{% static 'authentication/login/login.js' %}"></script>
+</body>
+</html>

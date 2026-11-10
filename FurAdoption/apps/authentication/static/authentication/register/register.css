@@ -1,0 +1,195 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    /* Green to blue gradient background */
+    background: linear-gradient(135deg, #4ade80 0%, #2dd4bf 50%, #06b6d4 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: #333;
+}
+
+/* --- UNIFORM HEADER STYLING FOR BOTH PAGES --- */
+.top-header {
+    padding: 20px 40px; /* Fixed padding so it doesn't shift */
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+}
+
+.logo-img {
+    width: 42px;  /* Exact fixed width */
+    height: 42px; /* Exact fixed height */
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.logo-container h1 {
+    font-size: 24px;     /* Exact fixed title size */
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Main Layout - Aligns cards to the top so they share the exact same starting position */
+.form-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Locks the top position */
+    padding-top: 40px;       /* Consistent distance from the header */
+    padding-bottom: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* The White Card - Natural height, same width, no forced stretching */
+.form-card {
+    background-color: white;
+    width: 100%;
+    max-width: 500px;        /* Keeps them identical in width */
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    /* Height is now automatic and based purely on content */
+}
+
+/* Typography inside card */
+.form-title {
+    color: #72d992;
+    font-size: clamp(20px, 4vw, 24px);
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.form-subtitle {
+    font-size: clamp(12px, 2.5vw, 13px);
+    color: #888;
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+/* Form Inputs */
+.input-group {
+    position: relative;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.name-row {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+}
+
+.half-width {
+    flex: 1;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 40px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: clamp(13px, 2.5vw, 14px);
+    outline: none;
+    background-color: #fafafa;
+    color: #555;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus {
+    border-color: #72d992;
+}
+
+.name-row .input-group input {
+    padding-left: 15px;
+}
+
+.input-group .icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+}
+
+.input-group .toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    cursor: pointer;
+}
+
+/* Submit Button */
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: #72d992;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: clamp(14px, 3vw, 15px);
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #5ec77f;
+}
+
+/* Footer Link */
+.footer-link {
+    margin-top: 25px;
+    font-size: 13px;
+    color: #888;
+}
+
+.footer-link a {
+    color: #4da6ff;
+    text-decoration: none;
+}
+
+.footer-link a:hover {
+    text-decoration: underline;
+}
+
+/* Page Footer */
+.page-footer {
+    text-align: center;
+    padding: 20px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+}
+
+/* --- RESPONSIVE MEDIA QUERIES --- */
+@media (max-width: 480px) {
+    /* Stack the First Name and Last Name inputs vertically on phones */
+    .name-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .name-row .input-group {
+        margin-bottom: 15px;
+    }
+    
+    /* Give slightly more breathing room for thumbs on mobile inputs */
+    .input-group input {
+        padding-top: 14px;
+        padding-bottom: 14px;
+    }
+}
