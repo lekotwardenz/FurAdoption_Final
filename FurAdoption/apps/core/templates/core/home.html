@@ -23,13 +23,47 @@
         </div>
 
         <div class="navbar-right">
-            <div class="nav-icon">
-                <i class="fa-regular fa-bell"></i>
-            </div>
-            <div class="profile-container">
+    <div class="nav-icon">
+        <i class="fa-regular fa-bell"></i>
+    </div>
+    
+    <!-- Profile Container with Dropdown Trigger -->
+    <div class="profile-dropdown-wrapper" id="profileDropdownTrigger">
+        <div class="profile-container">
+            {% if request.user.profile %}
                 <img src="{{ request.user.profile.avatar_url }}" alt="Profile" class="profile-img">
-            </div>
+            {% else %}
+                <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=random&color=fff&size=150" alt="Profile" class="profile-img">
+            {% endif %}
         </div>
+
+        <!-- The Popout Dropdown Menu (Hidden by default) -->
+        <div class="profile-dropdown-menu" id="profileDropdownMenu">
+            <div class="dropdown-header">
+                <span class="dropdown-username">@{{ request.user.username }}</span>
+                <span class="dropdown-email">{{ request.user.email }}</span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item">
+                <i class="fa-solid fa-user"></i> Profile
+            </a>
+            <a href="#" class="dropdown-item">
+                <i class="fa-solid fa-paw"></i> My Shelters / Animals
+            </a>
+            <a href="#" class="dropdown-item">
+                <i class="fa-solid fa-gear"></i> Settings
+            </a>
+            <div class="dropdown-divider"></div>
+            <!-- Django Logout Link (or form) -->
+            <form action="{% url 'logout' %}" method="post" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-item dropdown-logout-btn">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
     </nav>
 
     <!-- Main Content Area (Scrollable) -->

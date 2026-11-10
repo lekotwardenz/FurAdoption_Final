@@ -17,6 +17,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedFiles = []; // Array to store multiple images
     const MAX_IMAGES = 10;
 
+    // --- PROFILE DROPDOWN POPOUT LOGIC ---
+    const profileTrigger = document.getElementById('profileDropdownTrigger');
+    const profileMenu = document.getElementById('profileDropdownMenu');
+
+    if (profileTrigger && profileMenu) {
+        profileTrigger.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent event from triggering document click listener
+            profileMenu.classList.toggle('show');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!profileTrigger.contains(e.target)) {
+                profileMenu.classList.remove('show');
+            }
+        });
+    }
+
     // --- MODAL TOGGLE & DISCARD LOGIC ---
     openModalTriggers.forEach(trigger => {
         trigger.addEventListener('click', () => {
