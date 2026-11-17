@@ -10,14 +10,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Navbar (Updated with search bar and notification icon) -->
     <nav class="navbar">
-        <div class="navbar-left">
+        <div class="navbar-left" style="display: flex; align-items: center; gap: 20px; width: 100%;">
             <div class="logo-container">
-                <a href="{% url 'home' %}"><img src="{% static 'images/logo.png' %}" alt="Logo" class="logo-img"></a>
+                <a href="{% url 'home' %}">
+                    <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo-img">
+                </a>
+            </div>
+            <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Looking for something?" style="border: none; background: transparent; outline: none; margin-left: 10px; width: 100%; font-size: 14px; color: #333;">
             </div>
         </div>
         <div class="navbar-right">
-            <a href="{% url 'profile' request.user.username %}" class="home-link-btn"><i class="fa-solid fa-arrow-left"></i> Back to Profile</a>
+            <div class="nav-icon">
+                <i class="fa-regular fa-bell"></i>
+            </div>
         </div>
     </nav>
 
