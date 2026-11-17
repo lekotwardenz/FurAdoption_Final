@@ -1,29 +1,42 @@
 /* Profile Page Specific Styles */
 body {
     background-color: #f9fafb;
+    overflow-x: hidden; /* Prevents horizontal scrolling from full-width elements */
 }
 
+/* Page container */
 .profile-main {
-    max-width: 800px;
-    margin: 90px auto 40px auto;
-    padding: 0 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 40px 20px;
 }
 
-.profile-header-card {
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    border: 1px solid #e5e7eb;
-}
-
+/* Full-width banner that breaks out of the container gracefully */
 .profile-banner {
-    height: 160px;
-    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+    width: 100vw;
+    height: 180px;
+    background: linear-gradient(135deg, #2dd4bf 0%, #0ea5e9 100%);
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    margin-top: 20px;
+}
+
+/* The white profile header card */
+.profile-header-card {
+    position: relative;
+    background: #fff;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    margin-top: 0;
+    overflow: hidden;
 }
 
 .profile-info-section {
-    padding: 0 30px 24px 30px;
+    padding: 0 30px 30px 30px;
     position: relative;
     display: flex;
     justify-content: space-between;
