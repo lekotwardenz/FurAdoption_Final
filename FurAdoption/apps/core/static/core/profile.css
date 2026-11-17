@@ -186,3 +186,29 @@ body {
     color: #4b5563;
     padding: 6px 0;
 }
+
+/* Navbar Logo Fix for Profile & Edit Pages */
+.navbar .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(to bottom left, #00EFDB, #70D780);
+}
+
+.navbar .logo-container a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.navbar .logo-img {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+}
