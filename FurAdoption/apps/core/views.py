@@ -84,8 +84,6 @@ def add_comment(request, post_id):
 
         comment = PostComment.objects.create(user=request.user, post=post, content=text)
 
-        comment = PostComment.objects.create(user=request.user, post=post, content=text)
-
         if post.user != request.user:
             Notification.objects.create(
                 recipient=post.user,

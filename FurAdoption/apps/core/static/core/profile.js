@@ -225,11 +225,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- COMMENTS ON PROFILE POSTS ---
     document.querySelectorAll('.submit-comment-btn').forEach(btn => {
+        if (btn.dataset.commentBound === 'true') return;
+        btn.dataset.commentBound = 'true';
+
         btn.addEventListener('click', function () {
+            if (this.disabled) return;
+
             const postId = this.getAttribute('data-post-id');
             const inputField = document.getElementById(`comment-input-${postId}`);
-            const commentText = inputField.value.trim();
+            const commentText = inputField ? inputField.value.trim() : '';
             if (!commentText) return;
+
+            this.disabled = true;
+            if (inputField) inputField.value = '';
 
             fetch(`/add-comment/${postId}/`, {
                 method: 'POST',
@@ -242,28 +250,38 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    inputField.value = '';
                     const postActions = document.querySelector(`.post-actions[data-post-id="${postId}"]`);
                     if (postActions) {
-                        postActions.querySelector('.comment-count').innerText = data.comment_count;
+                        const countSpan = postActions.querySelector('.comment-count');
+                        if (countSpan) countSpan.innerText = data.comment_count;
                     }
                     const commentList = document.getElementById(`comment-list-${postId}`);
-                    const newCommentHtml = `
-                        <div class="comment-item">
-                            <img src="${data.avatar_url}" alt="Profile" class="comment-profile-img">
-                            <div class="comment-content">
-                                <div class="comment-header">
-                                    <span class="comment-author">${data.username}</span>
-                                    <span class="comment-date">${data.date}</span>
+                    if (commentList) {
+                        const newCommentHtml = `
+                            <div class="comment-item">
+                                <img src="${data.avatar_url}" alt="Profile" class="comment-profile-img">
+                                <div class="comment-content">
+                                    <div class="comment-header">
+                                        <span class="comment-author">${data.username}</span>
+                                        <span class="comment-date">${data.date}</span>
+                                    </div>
+                                    <p class="comment-text">${data.text}</p>
                                 </div>
-                                <p class="comment-text">${data.text}</p>
                             </div>
-                        </div>
-                    `;
-                    commentList.insertAdjacentHTML('beforeend', newCommentHtml);
+                        `;
+                        commentList.insertAdjacentHTML('beforeend', newCommentHtml);
+                    }
                 } else {
+                    if (inputField && !inputField.value) inputField.value = commentText;
                     alert(data.message);
                 }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                if (inputField && !inputField.value) inputField.value = commentText;
+            })
+            .finally(() => {
+                this.disabled = false;
             });
         });
     });
