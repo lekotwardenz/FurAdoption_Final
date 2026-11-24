@@ -135,3 +135,7 @@ MEDIA_URL = '/media/'
 
 # The absolute path to the directory where Django will save the uploaded files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+SUPABASE_URL = env('SUPABASE_URL', default='')
+SUPABASE_SERVICE_KEY = env('SUPABASE_SERVICE_KEY', default='')
+SUPABASE_STORAGE_BUCKET = env('SUPABASE_STORAGE_BUCKET', default='post-photos')

@@ -109,7 +109,7 @@ body {
     overflow: hidden;
     cursor: pointer;
     border: 2px solid #e5e7eb;
-    flex-shrink: 0; /* Prevents flexbox from squishing it */
+    flex-shrink: 0;
 }
 
 .profile-img {
@@ -448,6 +448,27 @@ body {
     color: #4a90e2;
 }
 
+.delete-post-btn {
+    background: #fff5f5;
+    color: #ef4444;
+    border: 1px solid #fecaca;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.2s, color 0.2s, transform 0.2s;
+}
+
+.delete-post-btn:hover {
+    background-color: #ef4444;
+    color: #ffffff;
+    transform: scale(1.05);
+}
+
 /* Post Body & Media */
 .post-content p {
     font-size: 14px;
@@ -626,9 +647,9 @@ body {
 
 /* The Popout Menu Card */
 .profile-dropdown-menu {
-    display: none; /* Hidden by default */
+    display: none;
     position: absolute;
-    top: 55px; /* Adjust based on navbar height */
+    top: 55px;
     right: 0;
     width: 220px;
     background-color: #ffffff;
@@ -640,12 +661,10 @@ body {
     animation: fadeIn 0.15s ease-in-out;
 }
 
-/* Show class toggled by JS */
 .profile-dropdown-menu.show {
     display: block;
 }
 
-/* Header inside dropdown */
 .dropdown-header {
     padding: 10px 16px;
     display: flex;
@@ -671,7 +690,6 @@ body {
     margin: 6px 0;
 }
 
-/* Menu Links & Buttons */
 .dropdown-item {
     display: flex;
     align-items: center;
@@ -694,7 +712,7 @@ body {
 }
 
 .dropdown-logout-btn {
-    color: #ef4444; /* Red color for logout */
+    color: #ef4444;
 }
 
 .dropdown-logout-btn:hover {
@@ -705,4 +723,108 @@ body {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-5px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+.notif-dropdown-wrapper {
+    position: relative;
+}
+
+.notif-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background-color: #ef4444;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notif-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 55px;
+    right: 0;
+    width: 300px;
+    max-height: 380px;
+    overflow-y: auto;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e5e7eb;
+    z-index: 1050;
+    padding: 8px 0;
+}
+
+.notif-dropdown-menu.show {
+    display: block;
+}
+
+.notif-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 14px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #1f2937;
+}
+
+.notif-mark-read-btn {
+    background: none;
+    border: none;
+    color: #1eb386;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.notif-mark-read-btn:hover {
+    text-decoration: underline;
+}
+
+.notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.notif-item.unread {
+    background-color: #f0fdf4;
+}
+
+.notif-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.notif-text {
+    line-height: 1.35;
+}
+
+.notif-date {
+    display: block;
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 2px;
+}
+
+.notif-empty {
+    text-align: center;
+    color: #888;
+    font-size: 13px;
+    padding: 18px 12px;
 }

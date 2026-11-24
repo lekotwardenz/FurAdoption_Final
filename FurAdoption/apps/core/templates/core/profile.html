@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Navbar (Updated with search bar and notification icon) -->
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="navbar-left" style="display: flex; align-items: center; gap: 20px; width: 100%;">
             <div class="logo-container">
@@ -24,8 +24,22 @@
             </div>
         </div>
         <div class="navbar-right">
-            <div class="nav-icon">
-                <i class="fa-regular fa-bell"></i>
+            <div class="notif-dropdown-wrapper" id="notifDropdownTrigger">
+                <div class="nav-icon" style="position: relative;">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="notif-badge" id="notifBadge" style="display: none;">0</span>
+                </div>
+
+                <div class="notif-dropdown-menu" id="notifDropdownMenu">
+                    <div class="notif-header">
+                        <span>Notifications</span>
+                        <button type="button" id="markAllReadBtn" class="notif-mark-read-btn">Mark all read</button>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <div class="notif-list" id="notifList">
+                        <p class="notif-empty">Loading notifications...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
@@ -37,7 +51,7 @@
             <div class="profile-banner"></div>
             <div class="profile-info-section">
                 <div class="profile-avatar-large-container">
-                    <img src="https://ui-avatars.com/api/?name={{ profile_user.username }}&background=random&color=fff&size=150" alt="Profile" class="profile-avatar-large">
+                    <img src="{{ profile_user.profile.avatar_url }}" alt="Profile" class="profile-avatar-large">
                 </div>
                 <div class="profile-text-details">
                     <h1 class="profile-username">@{{ profile_user.username }}</h1>
@@ -45,34 +59,219 @@
                     <p class="profile-bio">{{ profile_user.profile.bio|default:"No bio added yet. Animal lover & rescuer." }}</p>
                     <div class="profile-stats">
                         <span><strong>{{ posts_count|default:0 }}</strong> Posts</span>
-                        <span><strong>0</strong> Shelters</span>
+                        <span><strong>{{ animals_count|default:0 }}</strong> Animals in Inventory</span>
                         <span>Joined {{ profile_user.date_joined|date:"F Y" }}</span>
                     </div>
                 </div>
+                {% if is_own_profile %}
                 <div class="profile-action-btns">
                     <a href="{% url 'edit_profile' %}" class="edit-profile-btn" style="text-decoration: none; display: inline-block;">
                         <i class="fa-solid fa-pen"></i> Edit Profile
                     </a>
                 </div>
+                {% endif %}
             </div>
         </div>
 
-        <!-- Profile Tabs (Posts / Saved / etc.) -->
+        <!-- Profile Tabs -->
         <div class="profile-tabs">
             <button class="tab-btn active" data-tab="user-posts">Posts</button>
-            <button class="tab-btn" data-tab="user-shelters">Shelters / Animals</button>
+            <button class="tab-btn" data-tab="user-inventory">Inventory</button>
         </div>
 
         <!-- Tab Content Area -->
         <div class="profile-content-area">
+
+            <!-- TAB 1: USER POSTS (Same post frame design as home.html) -->
             <div class="tab-pane active" id="user-posts">
-                <p class="empty-state-text">User posts will appear here.</p>
+                <div class="feed-container" style="margin-top: 0;">
+                    {% for post in posts %}
+                    <div class="post-card">
+                        <div class="post-header">
+                            <div class="post-author-info">
+                                <div class="profile-container">
+                                    <img src="{{ post.user.profile.avatar_url }}" alt="Profile" class="profile-img">
+                                </div>
+                                <div class="author-details">
+                                    <span class="author-name">{{ post.user.username }}</span>
+                                    <span class="post-date">{{ post.created_at|date:"F j, Y" }}</span>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="post-badge {% if post.post_type == 'Rescue' %}badge-rescue{% else %}badge-adopt{% endif %}">
+                                    <i class="fa-solid fa-paw"></i>
+                                    {% if post.post_type == 'Rescue' %}Open for Adoption{% else %}Willing to adopt{% endif %}
+                                </div>
+
+                                {% if request.user == post.user %}
+                                <button type="button" class="delete-post-btn" data-post-id="{{ post.id }}" title="Delete post" aria-label="Delete post">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="post-content">
+                            <p>{{ post.caption }}</p>
+                        </div>
+
+                        {% if post.photos.all %}
+                        <div class="post-media">
+                            <img src="{{ post.photos.first.image_url }}" alt="Post Photo">
+                        </div>
+                        {% endif %}
+
+                        <div class="post-actions" data-post-id="{{ post.id }}">
+                            <span class="action-item like-btn">
+                                <i class="fa-heart {% if post.id in liked_post_ids %}fa-solid liked-heart{% else %}fa-regular{% endif %}" style="color: #ff4d4d;"></i>
+                                <span class="like-count">{{ post.likes.count }}</span>
+                            </span>
+                            <span class="action-item">
+                                <i class="fa-solid fa-comment" style="color: #888;"></i>
+                                <span class="comment-count">{{ post.comments.count }}</span>
+                            </span>
+                        </div>
+
+                        <div class="toggle-comments-wrapper">
+                            <span class="toggle-comments-btn" data-post-id="{{ post.id }}">Open comments</span>
+                        </div>
+
+                        <div class="comments-section" id="comments-section-{{ post.id }}">
+                            <div class="comment-list" id="comment-list-{{ post.id }}">
+                                {% for comment in post.comments.all %}
+                                <div class="comment-item">
+                                    <img src="{{ comment.user.profile.avatar_url }}" alt="Profile" class="comment-profile-img">
+                                    <div class="comment-content">
+                                        <div class="comment-header">
+                                            <span class="comment-author">{{ comment.user.username }}</span>
+                                            <span class="comment-date">{{ comment.created_at|date:"F j, Y" }}</span>
+                                        </div>
+                                        <p class="comment-text">{{ comment.content }}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="comment-input-wrapper">
+                                <input type="text" class="comment-input" id="comment-input-{{ post.id }}" placeholder="Write a comment...">
+                                <button class="submit-comment-btn" data-post-id="{{ post.id }}">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="post-card">
+                        <p class="empty-state-text" style="text-align: center; color: #888;">No posts yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-            <div class="tab-pane" id="user-shelters" style="display: none;">
-                <p class="empty-state-text">User shelters/animals will appear here.</p>
+
+            <!-- TAB 2: INVENTORY -->
+            <div class="tab-pane" id="user-inventory" style="display: none;">
+                <div style="max-width: 750px; margin: 0 auto;">
+                    {% if user_inventory %}
+                        <div class="post-card" style="margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <h3 style="font-size: 18px; color: #333;">
+                                        <i class="fa-solid fa-warehouse" style="color: #70D780;"></i>
+                                        {{ user_inventory.shelter_name }}
+                                    </h3>
+                                    <p style="font-size: 13px; color: #888; margin-top: 4px;">
+                                        Manage rescued animals and track their adoption status.
+                                    </p>
+                                </div>
+                                {% if is_own_profile %}
+                                <button id="openAddAnimalModalBtn" class="post-submit-btn" style="width: auto; padding: 0 16px; font-size: 14px; font-weight: 600; gap: 8px;">
+                                    <i class="fa-solid fa-plus"></i> Add Animal
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div id="inventoryAnimalList" style="display: flex; flex-direction: column; gap: 15px;">
+                            {% for animal in animals %}
+                            <div class="post-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                                <div>
+                                    <h4 style="font-size: 16px; color: #333;">
+                                        {{ animal.name|default:"Unnamed" }}
+                                        <span style="font-weight: 400; font-size: 13px; color: #777;">({{ animal.species }})</span>
+                                    </h4>
+                                    <p style="font-size: 13px; color: #666; margin-top: 4px;">
+                                        Breed: <strong>{{ animal.breed|default:"—" }}</strong> &bull;
+                                        Age: <strong>{{ animal.age|default:"—" }}</strong>
+                                    </p>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span class="post-badge {% if animal.adoption_status == 'Available' %}badge-rescue{% else %}badge-adopt{% endif %}" id="status-badge-{{ animal.id }}">
+                                        {{ animal.adoption_status }}
+                                    </span>
+                                    {% if is_own_profile %}
+                                    <button class="toggle-status-btn" data-animal-id="{{ animal.id }}" style="border: 1px solid #ddd; background: #f9fafb; border-radius: 15px; padding: 6px 12px; font-size: 12px; cursor: pointer;">
+                                        Switch Status
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="post-card" id="noAnimalsPlaceholder">
+                                <p style="text-align: center; color: #888;">No animals added to this inventory yet.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                    {% else %}
+                        <div class="post-card" style="text-align: center; padding: 35px 20px;">
+                            <i class="fa-solid fa-paw" style="font-size: 36px; color: #70D780; margin-bottom: 12px;"></i>
+                            {% if is_own_profile %}
+                                <h3 style="font-size: 18px; color: #333; margin-bottom: 8px;">No Inventory Created Yet</h3>
+                                <p style="font-size: 14px; color: #777; max-width: 450px; margin: 0 auto 20px auto;">
+                                    An inventory is optional. Create one if you want to organize and track animals under your care or shelter.
+                                </p>
+                                <div style="display: flex; justify-content: center; gap: 10px; max-width: 420px; margin: 0 auto;">
+                                    <input type="text" id="newShelterNameInput" placeholder="Inventory / Shelter Name (optional)" style="flex: 1; padding: 10px 15px; border-radius: 20px; border: 1px solid #ddd; outline: none; font-size: 14px;">
+                                    <button id="createInventoryBtn" class="post-submit-btn" style="width: auto; padding: 0 18px; font-weight: 600; font-size: 14px;">
+                                        Create Inventory
+                                    </button>
+                                </div>
+                            {% else %}
+                                <p style="color: #888; font-size: 14px;">@{{ profile_user.username }} has not set up an animal inventory.</p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
             </div>
+
         </div>
     </main>
+
+    {% csrf_token %}
+
+    <!-- Add Animal Modal -->
+    {% if is_own_profile and user_inventory %}
+    <div id="addAnimalModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Add Animal to Inventory</h2>
+                <button class="close-modal-btn" id="closeAddAnimalModalBtn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <input type="text" id="animalNameInput" placeholder="Name (optional)" style="padding: 10px 14px; border-radius: 10px; border: 1px solid #ddd; font-size: 14px;">
+                <input type="text" id="animalSpeciesInput" placeholder="Species (e.g., Dog, Cat) *" style="padding: 10px 14px; border-radius: 10px; border: 1px solid #ddd; font-size: 14px;">
+                <input type="text" id="animalBreedInput" placeholder="Breed (optional)" style="padding: 10px 14px; border-radius: 10px; border: 1px solid #ddd; font-size: 14px;">
+                <input type="text" id="animalAgeInput" placeholder="Age (optional, e.g., 6 months)" style="padding: 10px 14px; border-radius: 10px; border: 1px solid #ddd; font-size: 14px;">
+                <select id="animalStatusInput" class="post-classification-dropdown" style="padding: 10px 14px; border-radius: 10px; font-size: 14px; margin-top: 0;">
+                    <option value="Available">Available</option>
+                    <option value="Adopted">Adopted</option>
+                </select>
+            </div>
+            <button id="submitAddAnimalBtn" class="modal-post-btn">Save Animal</button>
+        </div>
+    </div>
+    {% endif %}
 
     <script src="{% static 'core/profile.js' %}"></script>
 </body>

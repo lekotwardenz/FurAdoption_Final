@@ -225,3 +225,107 @@ body {
     height: 70%;
     object-fit: contain;
 }
+
+.notif-dropdown-wrapper {
+    position: relative;
+}
+
+.notif-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background-color: #ef4444;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notif-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 55px;
+    right: 0;
+    width: 300px;
+    max-height: 380px;
+    overflow-y: auto;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e5e7eb;
+    z-index: 1050;
+    padding: 8px 0;
+}
+
+.notif-dropdown-menu.show {
+    display: block;
+}
+
+.notif-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 14px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #1f2937;
+}
+
+.notif-mark-read-btn {
+    background: none;
+    border: none;
+    color: #1eb386;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.notif-mark-read-btn:hover {
+    text-decoration: underline;
+}
+
+.notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.notif-item.unread {
+    background-color: #f0fdf4;
+}
+
+.notif-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.notif-text {
+    line-height: 1.35;
+}
+
+.notif-date {
+    display: block;
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 2px;
+}
+
+.notif-empty {
+    text-align: center;
+    color: #888;
+    font-size: 13px;
+    padding: 18px 12px;
+}

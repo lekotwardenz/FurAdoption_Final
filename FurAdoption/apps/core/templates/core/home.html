@@ -23,47 +23,61 @@
         </div>
 
         <div class="navbar-right">
-    <div class="nav-icon">
-        <i class="fa-regular fa-bell"></i>
-    </div>
-    
-    <!-- Profile Container with Dropdown Trigger -->
-    <div class="profile-dropdown-wrapper" id="profileDropdownTrigger">
-        <div class="profile-container">
-            {% if request.user.profile %}
-                <img src="{{ request.user.profile.avatar_url }}" alt="Profile" class="profile-img">
-            {% else %}
-                <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=random&color=fff&size=150" alt="Profile" class="profile-img">
-            {% endif %}
-        </div>
+            <div class="notif-dropdown-wrapper" id="notifDropdownTrigger">
+                <div class="nav-icon" style="position: relative;">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="notif-badge" id="notifBadge" style="display: none;">0</span>
+                </div>
 
-        <!-- The Popout Dropdown Menu (Hidden by default) -->
-        <div class="profile-dropdown-menu" id="profileDropdownMenu">
-            <div class="dropdown-header">
-                <span class="dropdown-username">@{{ request.user.username }}</span>
-                <span class="dropdown-email">{{ request.user.email }}</span>
+                <div class="notif-dropdown-menu" id="notifDropdownMenu">
+                    <div class="notif-header">
+                        <span>Notifications</span>
+                        <button type="button" id="markAllReadBtn" class="notif-mark-read-btn">Mark all read</button>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <div class="notif-list" id="notifList">
+                        <p class="notif-empty">Loading notifications...</p>
+                    </div>
+                </div>
             </div>
-            <div class="dropdown-divider"></div>
-            <a href="{% url 'profile' request.user.username %}" class="dropdown-item">
-                <i class="fa-solid fa-user"></i> Profile
-            </a>
-            <a href="#" class="dropdown-item">
-                <i class="fa-solid fa-paw"></i> My Shelters / Animals
-            </a>
-            <a href="#" class="dropdown-item">
-                <i class="fa-solid fa-gear"></i> Settings
-            </a>
-            <div class="dropdown-divider"></div>
-            <!-- Django Logout Link (or form) -->
-            <form action="{% url 'logout' %}" method="post" style="margin: 0;">
-                {% csrf_token %}
-                <button type="submit" class="dropdown-item dropdown-logout-btn">
-                    <i class="fa-solid fa-right-from-bracket"></i> Logout
-                </button>
-            </form>
+            
+            <!-- Profile Container with Dropdown Trigger -->
+            <div class="profile-dropdown-wrapper" id="profileDropdownTrigger">
+                <div class="profile-container">
+                    {% if request.user.profile %}
+                        <img src="{{ request.user.profile.avatar_url }}" alt="Profile" class="profile-img">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=random&color=fff&size=150" alt="Profile" class="profile-img">
+                    {% endif %}
+                </div>
+
+                <!-- The Popout Dropdown Menu (Hidden by default) -->
+                <div class="profile-dropdown-menu" id="profileDropdownMenu">
+                    <div class="dropdown-header">
+                        <span class="dropdown-username">@{{ request.user.username }}</span>
+                        <span class="dropdown-email">{{ request.user.email }}</span>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="{% url 'profile' request.user.username %}" class="dropdown-item">
+                        <i class="fa-solid fa-user"></i> Profile
+                    </a>
+                    <a href="{% url 'profile' request.user.username %}?tab=inventory" class="dropdown-item">
+                        <i class="fa-solid fa-paw"></i> Inventory
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fa-solid fa-gear"></i> Settings
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <!-- Django Logout Link (or form) -->
+                    <form action="{% url 'logout' %}" method="post" style="margin: 0;">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item dropdown-logout-btn">
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
     </nav>
 
     <!-- Main Content Area (Scrollable) -->
@@ -93,7 +107,6 @@
                 <!-- Post Header Row -->
                 <div class="post-header">
                     <div class="post-author-info">
-                        <!-- Make sure this wrapper div has the class name! -->
                         <div class="profile-container">
                             <img src="{{ post.user.profile.avatar_url }}" alt="Profile" class="profile-img">
                         </div>
@@ -103,10 +116,18 @@
                         </div>
                     </div>
                     
-                    <!-- Dynamic Badge Color based on Post Type -->
-                    <div class="post-badge {% if post.post_type == 'Rescue' %}badge-rescue{% else %}badge-adopt{% endif %}">
-                        <i class="fa-solid fa-paw"></i> 
-                        {% if post.post_type == 'Rescue' %}Open for Adoption{% else %}Willing to adopt{% endif %}
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <!-- Dynamic Badge Color based on Post Type -->
+                        <div class="post-badge {% if post.post_type == 'Rescue' %}badge-rescue{% else %}badge-adopt{% endif %}">
+                            <i class="fa-solid fa-paw"></i> 
+                            {% if post.post_type == 'Rescue' %}Open for Adoption{% else %}Willing to adopt{% endif %}
+                        </div>
+
+                        {% if request.user == post.user %}
+                        <button type="button" class="delete-post-btn" data-post-id="{{ post.id }}" title="Delete post" aria-label="Delete post">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -117,9 +138,9 @@
 
                 <!-- Post Image (Displays the first uploaded image) -->
                 {% if post.photos.all %}
-                <div class="post-media">
-                    <img src="{{ post.photos.first.image_url.url }}" alt="Post Photo">
-                </div>
+                    <div class="post-media">
+                        <img src="{{ post.photos.first.image_url }}" alt="Post Photo">
+                    </div>
                 {% endif %}
 
                 <!-- Post Interactions -->
@@ -145,7 +166,6 @@
                 <!-- Comments Section (Hidden by Default) -->
                 <div class="comments-section" id="comments-section-{{ post.id }}">
                     <div class="comment-list" id="comment-list-{{ post.id }}">
-                        <!-- Loop through the custom related_name 'comments' -->
                         {% for comment in post.comments.all %}
                         <div class="comment-item">
                             <img src="{{ comment.user.profile.avatar_url }}" alt="Profile" class="comment-profile-img">
@@ -154,7 +174,6 @@
                                     <span class="comment-author">{{ comment.user.username }}</span>
                                     <span class="comment-date">{{ comment.created_at|date:"F j, Y" }}</span>
                                 </div>
-                                <!-- Match the 'content' field in PostComment -->
                                 <p class="comment-text">{{ comment.content }}</p>
                             </div>
                         </div>
@@ -172,7 +191,6 @@
                 
             </div>
             {% empty %}
-            <!-- Displays if the database is completely empty -->
             <div class="empty-feed">
                 <p style="text-align: center; color: #888; margin-top: 40px;">No posts yet. Be the first to post!</p>
             </div>
@@ -198,10 +216,8 @@
                     <img src="{{ request.user.profile.avatar_url }}" alt="User Profile" class="profile-img">
                 </div>
                 <div class="user-details">
-                    <!-- Dynamically displays the logged-in user's username -->
                     <span class="user-name">{{ request.user.username }}</span>
                     <select id="postClassification" class="post-classification-dropdown">
-                        <!-- Change the values to match the models.py exactly -->
                         <option value="Rescue">Open for Adoption</option>
                         <option value="Looking to Adopt">Willing to adopt</option>
                     </select>
@@ -217,7 +233,6 @@
             
             <div class="modal-footer" style="position: relative;">
                 <div class="modal-icons">
-                    <!-- Hidden file input for up to 10 images -->
                     <input type="file" id="imageUploadInput" accept="image/*" multiple style="display: none;">
                     
                     <i id="triggerImageUpload" class="fa-solid fa-image" style="color: #ff6b6b; cursor: pointer;"></i>
@@ -238,7 +253,6 @@
         </div>
     </div>
 
-    <!-- Link the JavaScript file here -->
     <script src="{% static 'core/home.js' %}"></script>
 </body>
 </html>
