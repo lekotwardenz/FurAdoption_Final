@@ -68,7 +68,6 @@
                         <i class="fa-solid fa-gear"></i> Settings
                     </a>
                     <div class="dropdown-divider"></div>
-                    <!-- Django Logout Link (or form) -->
                     <form action="{% url 'logout' %}" method="post" style="margin: 0;">
                         {% csrf_token %}
                         <button type="submit" class="dropdown-item dropdown-logout-btn">
@@ -98,11 +97,24 @@
             </button>
         </div>
 
+        <!-- Feed Filter Bar -->
+        <div class="feed-filter-bar">
+            <button type="button" class="filter-pill active" data-filter="all">
+                All Posts
+            </button>
+            <button type="button" class="filter-pill" data-filter="Rescue">
+                <i class="fa-solid fa-paw"></i> Open for Adoption
+            </button>
+            <button type="button" class="filter-pill" data-filter="Looking to Adopt">
+                <i class="fa-solid fa-heart"></i> Willing to adopt
+            </button>
+        </div>
+
         <!-- The Dynamic Scrollable Feed -->
         <div class="feed-container">
             
             {% for post in posts %}
-            <div class="post-card">
+            <div class="post-card" data-post-type="{{ post.post_type }}">
                 
                 <!-- Post Header Row -->
                 <div class="post-header">
@@ -195,6 +207,12 @@
                 <p style="text-align: center; color: #888; margin-top: 40px;">No posts yet. Be the first to post!</p>
             </div>
             {% endfor %}
+
+            <div class="empty-feed" id="filteredEmptyState" style="display: none;">
+                <p style="text-align: center; color: #555; margin-top: 20px; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);">
+                    No posts match this filter yet.
+                </p>
+            </div>
             
         </div>
 

@@ -828,3 +828,54 @@ body {
     font-size: 13px;
     padding: 18px 12px;
 }
+
+/* --- FEED FILTER BAR --- */
+.feed-filter-bar {
+    width: 100%;
+    max-width: 750px;
+    margin: 18px auto 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-pill {
+    background-color: rgba(255, 255, 255, 0.85);
+    color: #4b5563;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.filter-pill:hover {
+    background-color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.filter-pill.active {
+    background-color: #ffffff;
+    color: #111827;
+    border-color: #70D780;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.filter-pill[data-filter="Rescue"].active {
+    background-color: #e0fcf2;
+    color: #1eb386;
+    border-color: #1eb386;
+}
+
+.filter-pill[data-filter="Looking to Adopt"].active {
+    background-color: #e6f2ff;
+    color: #4a90e2;
+    border-color: #4a90e2;
+}

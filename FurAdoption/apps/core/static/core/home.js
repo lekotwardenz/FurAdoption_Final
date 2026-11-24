@@ -13,10 +13,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const triggerEmojiPicker = document.getElementById('triggerEmojiPicker');
     const emojiPickerMenu = document.getElementById('emojiPickerMenu');
     const emojiItems = document.querySelectorAll('.emoji-item');
-    
 
     let selectedFiles = [];
     const MAX_IMAGES = 10;
+
+    // --- FEED FILTER LOGIC ---
+    const filterPills = document.querySelectorAll('.filter-pill');
+    const filteredEmptyState = document.getElementById('filteredEmptyState');
+    let activeFilter = 'all';
+
+    function applyFeedFilter(filterValue) {
+        activeFilter = filterValue;
+        const postCards = document.querySelectorAll('.feed-container .post-card');
+        let visibleCount = 0;
+
+        postCards.forEach(card => {
+            const postType = card.getAttribute('data-post-type');
+            const matches = filterValue === 'all' || postType === filterValue;
+            card.style.display = matches ? '' : 'none';
+            if (matches) visibleCount++;
+        });
+
+        if (filteredEmptyState) {
+            filteredEmptyState.style.display = (postCards.length > 0 && visibleCount === 0) ? 'block' : 'none';
+        }
+    }
+
+    filterPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            filterPills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            applyFeedFilter(pill.getAttribute('data-filter') || 'all');
+        });
+    });
 
     // --- PROFILE DROPDOWN POPOUT LOGIC ---
     const profileTrigger = document.getElementById('profileDropdownTrigger');
@@ -260,6 +289,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const feedContainer = document.querySelector('.feed-container');
                     if (feedContainer && feedContainer.querySelectorAll('.post-card').length === 0) {
                         feedContainer.innerHTML = '<div class="empty-feed"><p style="text-align: center; color: #888; margin-top: 40px;">No posts yet. Be the first to post!</p></div>';
+                    } else {
+                        applyFeedFilter(activeFilter);
                     }
                 } else {
                     alert('Error: ' + (data.message || 'Could not delete post.'));
@@ -310,7 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- COMMENTS LOGIC ---
     // --- COMMENTS LOGIC ---
     const commentButtons = document.querySelectorAll('.submit-comment-btn');
 
